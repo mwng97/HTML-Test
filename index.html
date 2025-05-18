@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 20px;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #343a40;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 10px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .empty-message {
+            text-align: center;
+            color: #6c757d;
+        }
+
+	th:nth-child(1), td:nth-child(1) {
+        width: 50px;
+        text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Add New Product</h2>
+
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="productName">
+
+        <label for="productQuantity">Number of Product:</label>
+        <input type="number" id="productQuantity" name="productQuantity" min="1">
+
+        <button onclick="addProduct()">Add Product</button>
+        <button onclick="deleteSelected()" style="background-color: #dc3545; margin-top: 10px;">Delete Selected</button>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>No.</th>
+                    <th>Product Name</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="productTableBody">
+                <tr id="emptyRow">
+                    <td colspan="4" class="empty-message">No product(s) available</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function addProduct() {
+            let productName = document.getElementById("productName").value;
+            let productQuantity = document.getElementById("productQuantity").value;
+
+            if (productName.trim() === "" || productQuantity.trim() === "" || productQuantity <= 0) {
+                alert("Please enter a valid product name and quantity.");
+                return;
+            }
+
+            let tableBody = document.getElementById("productTableBody");
+            let emptyRow = document.getElementById("emptyRow");
+
+            // Remove "No product(s) available" message if adding a product
+            if (emptyRow) {
+                tableBody.removeChild(emptyRow);
+            }
+
+            let newRow = tableBody.insertRow();
+            let cell0 = newRow.insertCell(0);
+            let cell1 = newRow.insertCell(1);
+            let cell2 = newRow.insertCell(2);
+            let cell3 = newRow.insertCell(3);
+
+            // Checkbox for selection
+            let checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "delete-checkbox";
+            cell0.appendChild(checkbox);
+
+            // Set the No. column to reflect the correct count
+            cell1.innerText = tableBody.rows.length;
+            cell2.innerText = productName;
+            cell3.innerText = productQuantity;
+
+            document.getElementById("productName").value = "";
+            document.getElementById("productQuantity").value = "";
+        }
+
+        function deleteSelected() {
+            let checkboxes = document.querySelectorAll(".delete-checkbox:checked");
+            if (checkboxes.length === 0) {
+                alert("Please select at least one product to delete.");
+                return;
+            }
+
+            let confirmDelete = confirm("Are you sure you want to delete the selected product(s)?");
+            if (confirmDelete) {
+                checkboxes.forEach(checkbox => {
+                    checkbox.closest("tr").remove();
+                });
+
+                // If table is empty, show the "No product(s) available" message
+                let tableBody = document.getElementById("productTableBody");
+                if (tableBody.rows.length === 0) {
+                    let emptyRow = tableBody.insertRow();
+                    emptyRow.id = "emptyRow";
+                    let emptyCell = emptyRow.insertCell(0);
+                    emptyCell.colSpan = 4;
+                    emptyCell.className = "empty-message";
+                    emptyCell.innerText = "No product(s) available";
+                }
+            }
+        }
+    </script>
+
+</body>
+</html>
